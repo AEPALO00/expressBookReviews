@@ -4,6 +4,9 @@ const session = require('express-session')
 const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
 
+// HOW TO RUN JSON SERVER AND APP SIMULTANEOUSLY
+// https://stackoverflow.com/questions/56723938/how-can-i-start-my-node-server-and-react-app-at-the-same-time
+
 const app = express();
 
 app.use(express.json());
