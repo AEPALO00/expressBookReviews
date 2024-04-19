@@ -3,13 +3,6 @@ const jwt = require('jsonwebtoken');
 const session = require('express-session')
 const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
-//Write the authenication mechanism here
-    // const username = req.params.username;
-    // const password = req.params.password;
-
-    // if(!username || !password) {
-    //     res.status(404).json({message:"User cannot be authenticated!"});
-    // }
 
 const app = express();
 

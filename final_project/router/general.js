@@ -3,65 +3,124 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
-
+const axios = require('axios');
 
 public_users.post("/register", (req,res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if(!username || !password) {
+      res.status(404).json({message:"Unable to register user!"});
+  } else {
+      // Check if user doesn't already exist
+      if(!isValid(username)) {
+        users.push({"username":username,"password":password});
+        res.status(200).json({message:"User registered successfully. Now you can login."})
+      } else {
+        res.status(404).json({message:"User already exists!"});
+      }
+  }
 });
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  return res.send(JSON.stringify(books,null,4));
+    let fetchData = new Promise((resolve,reject) => {
+        try {
+            resolve(JSON.stringify(books,null,4))
+        } catch(err) {
+            reject(err)
+        }
+    });
+
+    //Call the promise and wait for it to be resolved and then print a message.
+    fetchData.then((calbackMessage) => {
+        return res.send(calbackMessage);
+    })
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-    const isbn = parseInt(req.params.isbn);
-    let bookIsbn = books[isbn];
+    let fetchData = new Promise((resolve,reject) => {
+        try {
+            const isbn = parseInt(req.params.isbn);
+            let bookIsbn = books[isbn];
 
-    return res.send(bookIsbn);
+            if(bookIsbn) {
+                resolve(bookIsbn);
+            } else {
+                resolve(`Book with ISBN ${isbn} not found!`);
+            }
+        } catch(err) {
+            reject(err)
+        }
+    });
+
+    //Call the promise and wait for it to be resolved and then print a message.
+    fetchData.then((calbackMessage) => {
+        return res.send(calbackMessage);
+    })
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  const author = req.params.author.replaceAll("-"," ");
-  let bookAuthor = null;
+    let fetchData = new Promise((resolve,reject) => {
+        try {
+            const author = req.params.author.replaceAll("-"," ");
+            let bookAuthor = null;
 
-  console.log(author)
-  
-  for (const [key, value] of Object.entries(books)) {
-    if (value["author"] === author) {
-        bookAuthor = value;
-    }
-  }
+            for (const [key, value] of Object.entries(books)) {
+                if (value["author"] === author) {
+                    bookAuthor = value;
+                }
+            }
 
-  if(bookAuthor) {
-    return res.send(bookAuthor);
-  } else {
-    return res.send(`Author ${author} not found!`);
-  }
+            if(bookAuthor) {
+                resolve(bookAuthor);
+                } else {
+                resolve(`Author ${author} not found!`);
+            }
+        } catch(err) {
+            reject(err)
+        }
+    });
+
+    //Call the promise and wait for it to be resolved and then print a message.
+    fetchData.then((calbackMessage) => {
+        return res.send(calbackMessage);
+    })
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  const title = req.params.title.replaceAll("-"," ");
-  let bookTitle = null;
-  console.log(title)
-  for (const [key, value] of Object.entries(books)) {
-    if (value["title"] === title) {
-        bookTitle = value;
-    }
-  }
+    let fetchData = new Promise((resolve,reject) => {
+        try {
+            const title = req.params.title.replaceAll("-"," ");
+            let bookTitle = null;
 
-  if(bookTitle) {
-    return res.send(bookTitle);
-  } else {
-    return res.send(`Book with title ${title} not found!`);
-  }
+            for (const [key, value] of Object.entries(books)) {
+                if (value["title"] === title) {
+                    bookTitle = value;
+                }
+            }
+
+            if(bookTitle) {
+                resolve(bookTitle);
+                } else {
+                resolve(`Book with title ${title} not found!`);
+            }
+        } catch(err) {
+            reject(err)
+        }
+    });
+
+    //Call the promise and wait for it to be resolved and then print a message.
+    fetchData.then((calbackMessage) => {
+        return res.send(calbackMessage);
+    });
 });
 
 //  Get book review
